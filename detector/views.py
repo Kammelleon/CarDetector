@@ -1,3 +1,5 @@
+import base64
+
 from django.core.files import File
 from django.shortcuts import render, redirect
 import cv2
@@ -8,6 +10,7 @@ from .forms import DetectionModelForm
 
 class FileUploader(View):
     uploaded_image = None
+    base64_image = None
 
     def get(self, request):
         return render(request, "detector/file_uploader.html")
@@ -21,7 +24,6 @@ class FileUploader(View):
             # TODO: Redirect back to upload site
             print("It is not an image")
         else:
-            print(FileUploader.uploaded_image)
             return redirect('detector:model-chooser')
 
 class ModelChooser(View):
@@ -37,8 +39,13 @@ class ModelChooser(View):
     def post(self, request):
         detection_model_form = DetectionModelForm(request.POST)
         if detection_model_form.is_valid():
-            ModelChooser.selected_model = detection_model_form.cleaned_data['model']
+            selected_model = detection_model_form.cleaned_data['model']
+            ModelChooser.selected_model = selected_model
             # TODO: Deal with selected model
+            if "yolov5" in selected_model:
+                import detector.yolo
+                detector.yolo.hi()
+
             return redirect("detector:image-previewer")
 
 class ImagePreviewer(View):
