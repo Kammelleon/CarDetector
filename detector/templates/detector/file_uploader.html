@@ -7,6 +7,31 @@
     <link rel="stylesheet" href="{% static 'detector/css/file_uploader_style.css' %}">
 </head>
 <body>
-    <h1>Hello file uploader!</h1>
+<script type="text/javascript" src="{% static 'detector/jquery-3.6.0.js' %}"></script>
+<h1 id="upload-title">Upload an image</h1>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+  <input type="file" accept=".png, .jpg, .jpeg" name="file" id="dragndrop" required>
+  <p>Drag an image file here or click to select an image</p>
+  <button type="submit">Upload</button>
+</form>
+<script>
+  $(document).ready(function(){
+      $('form input').change(function () {
+          var filename = $('input[type=file]').val().split('\\').pop();
+          if(filename.endsWith(".png") || filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
+          {
+              $('form p').text("Selected file:\n"+filename);
+          }
+          else if(filename===""){
+              $('form p').text("Drag an image file here or click to select an image");
+          }
+          else{
+              $('form p').text("It is not an image-like file! Try again.");
+              alert("You have uploaded a file that is not an image. Try again and make sure that your file extension is: .jpg, .jpeg or .png")
+          }
+      });
+});
+</script>
 </body>
 </html>
