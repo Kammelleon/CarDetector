@@ -43,8 +43,10 @@ class ModelChooser(View):
             ModelChooser.selected_model = selected_model
             # TODO: Deal with selected model
             if "yolov5" in selected_model:
-                import detector.yolo
-                detector.yolo.hi()
+                from detector.yolo import Yolo
+                yolo = Yolo()
+                yolo.load(selected_model)
+                yolo.perform_detection_on(FileUploader.uploaded_image)
 
             return redirect("detector:image-previewer")
 
