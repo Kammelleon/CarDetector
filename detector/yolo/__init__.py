@@ -1,6 +1,5 @@
 import base64
 import traceback
-
 import torch
 import cv2
 from django.shortcuts import redirect
