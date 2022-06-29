@@ -1,5 +1,4 @@
-import cv2
-import numpy as np
+
 import pytest
 from detector.yolo import Yolo
 
@@ -24,6 +23,7 @@ class TestClass:
         yolo.load("yolov5n")
 
         # then
+        assert yolo.model is not None
         assert yolo.is_model_loaded is True
 
     def test_load_incorrect_model_type(self, yolo_model):
@@ -31,6 +31,7 @@ class TestClass:
 
         yolo.load("incorrect_yolo_model")
 
+        assert yolo.model is None
         assert yolo.is_model_loaded is False
 
     def test_detection_performed_on_valid_image(self, yolo_loaded_model):
@@ -38,7 +39,7 @@ class TestClass:
         image = "../test_files/car.jpg"
 
         # when
-        yolo_loaded_model.perform_detection_on(image, image_from_np_string=False)
+        yolo_loaded_model.perform_detection_on(image, image_from_numpy=False)
 
         # then
         assert yolo_loaded_model.is_detection_successfully_performed is True
@@ -48,7 +49,7 @@ class TestClass:
         image = "../test_files/car_empty.jpg"
 
         # when
-        yolo_loaded_model.perform_detection_on(image, image_from_np_string=False)
+        yolo_loaded_model.perform_detection_on(image, image_from_numpy=False)
 
         # then
         assert yolo_loaded_model.is_detection_successfully_performed is False

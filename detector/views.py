@@ -32,6 +32,7 @@ class FileUploader(View):
 
 class ModelChooser(View):
     selected_model = None
+    rendered_image = None
 
     def get(self, request):
         detection_model_form = DetectionModelForm()
@@ -50,8 +51,10 @@ class ModelChooser(View):
                 yolo = Yolo()
                 model_loaded = yolo.load(selected_model)
                 if model_loaded:
-                    successfully_performed_detection = yolo.perform_detection_on(FileUploader.uploaded_image)
+                    successfully_performed_detection, rendered_image = yolo.perform_detection_on(
+                        FileUploader.uploaded_image)
                     if successfully_performed_detection:
+                        ModelChooser.rendered_image = rendered_image
                         return redirect("detector:image-previewer")
             return redirect("detector:file-uploader")
         else:
@@ -60,4 +63,7 @@ class ModelChooser(View):
 
 class ImagePreviewer(View):
     def get(self, request):
-        return render(request, "detector/image_previewer.html")
+        context = {
+            "image": ModelChooser.rendered_image
+        }
+        return render(request, "detector/image_previewer.html", context=context)
