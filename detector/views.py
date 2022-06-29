@@ -8,6 +8,7 @@ from django.views import View
 
 from .forms import DetectionModelForm
 
+
 class FileUploader(View):
     uploaded_image = None
     base64_image = None
@@ -26,10 +27,11 @@ class FileUploader(View):
         else:
             return redirect('detector:model-chooser')
 
+
 class ModelChooser(View):
     selected_model = None
 
-    def get(self,request):
+    def get(self, request):
         detection_model_form = DetectionModelForm()
         context = {
             "detection_model_form": detection_model_form
@@ -41,15 +43,19 @@ class ModelChooser(View):
         if detection_model_form.is_valid():
             selected_model = detection_model_form.cleaned_data['model']
             ModelChooser.selected_model = selected_model
-            # TODO: Deal with selected model
             if "yolov5" in selected_model:
                 from detector.yolo import Yolo
                 yolo = Yolo()
-                yolo.load(selected_model)
-                yolo.perform_detection_on(FileUploader.uploaded_image)
+                model_loaded = yolo.load(selected_model)
+                if model_loaded:
+                    successfully_performed_detection = yolo.perform_detection_on(FileUploader.uploaded_image)
+                    if successfully_performed_detection:
+                        return redirect("detector:image-previewer")
+            return redirect("detector:file-uploader")
+        else:
+            return redirect("detector:file-uploader")
 
-            return redirect("detector:image-previewer")
 
 class ImagePreviewer(View):
-    def get(self,request):
+    def get(self, request):
         return render(request, "detector/image_previewer.html")
