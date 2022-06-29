@@ -23,11 +23,14 @@ class Yolo:
             self.is_model_loaded = False
             return self.is_model_loaded
 
-    def perform_detection_on(self, image):
+    def perform_detection_on(self, image, image_from_np_string=True):
         try:
+            if image_from_np_string:
+                image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
+            else:
+                image = cv2.imread(image, cv2.IMREAD_UNCHANGED)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             result = self.model(image)
-            result.render()
             self.is_detection_successfully_performed = True
             return self.is_detection_successfully_performed
         except:

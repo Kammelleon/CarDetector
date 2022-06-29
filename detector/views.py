@@ -18,8 +18,10 @@ class FileUploader(View):
 
     def post(self, request):
         file = request.FILES["file"]
+        print(type(file))
         numpy_converted_file = np.fromstring(file.read(), np.uint8)
-        FileUploader.uploaded_image = cv2.imdecode(numpy_converted_file, cv2.IMREAD_UNCHANGED)
+        # FileUploader.uploaded_image = cv2.imdecode(numpy_converted_file, cv2.IMREAD_UNCHANGED)
+        FileUploader.uploaded_image = numpy_converted_file
         if FileUploader.uploaded_image is None:
             # TODO: Add django message that file is not an image
             # TODO: Redirect back to upload site
