@@ -2,8 +2,6 @@ import base64
 import traceback
 import torch
 import cv2
-from django.shortcuts import redirect
-from django.contrib import messages
 
 
 class Yolo:
@@ -39,10 +37,6 @@ class Yolo:
         except Exception:
             self.is_detection_successfully_performed = False
             return self.is_detection_successfully_performed
-        # result.render()
-        # img = cv2.cvtColor(result.imgs[0], cv2.COLOR_RGB2BGR)
-        # cv2.imshow("im",img)
-        # cv2.waitKey(0)
 
     def ndarray_to_base64(self,ndarray):
         img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)

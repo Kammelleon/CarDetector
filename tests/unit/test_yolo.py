@@ -27,10 +27,13 @@ class TestClass:
         assert yolo.is_model_loaded is True
 
     def test_load_incorrect_model_type(self, yolo_model):
+        # given
         yolo = yolo_model
 
+        # when
         yolo.load("incorrect_yolo_model")
 
+        # then
         assert yolo.model is None
         assert yolo.is_model_loaded is False
 
