@@ -1,6 +1,6 @@
 
 import pytest
-from detector.yolo import Yolo
+from detector.models.yolo import Yolo
 
 
 class TestClass:

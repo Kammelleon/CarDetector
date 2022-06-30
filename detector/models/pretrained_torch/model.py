@@ -1,3 +1,5 @@
+import base64
+
 from torchvision.models import detection
 import numpy as np
 import pickle
@@ -8,7 +10,7 @@ import cv2
 class PretrainedModel:
     def __init__(self):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.CLASSES = pickle.loads(open("coco_dataset.pickle", "rb").read())
+        self.CLASSES = pickle.loads(open("./detector/models/pretrained_torch/coco_dataset.pickle", "rb").read())
         self.COLORS = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
         self.MINIMUM_CONFIDENCE = 0.7
         self.MODELS = {
@@ -21,6 +23,7 @@ class PretrainedModel:
             "ssdlite-mobilenet": detection.ssdlite320_mobilenet_v3_large
         }
         self.model = None
+        self.is_detection_successfully_performed = False
 
     def load(self, pretrained_model_name: str):
         self.model = self.MODELS[pretrained_model_name](pretrained=True,
@@ -30,10 +33,10 @@ class PretrainedModel:
         self.model.eval()
 
     def perform_detection_on(self, image):
-        image = cv2.imread(image)
+        image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         orig = image.copy()
 
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = image.transpose((2, 0, 1))
 
         image = np.expand_dims(image, axis=0)
@@ -66,7 +69,14 @@ class PretrainedModel:
                 cv2.putText(orig, label, (startX, y),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.COLORS[idx], 2)
 
-        cv2.imshow("Output", orig)
-        cv2.waitKey(0)
+        base64_image = self.ndarray_to_base64(orig)
+
+        self.is_detection_successfully_performed = True
+        return self.is_detection_successfully_performed, base64_image
+
+    def ndarray_to_base64(self,ndarray):
+        img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)
+        _, buffer = cv2.imencode('.png', img)
+        return base64.b64encode(buffer).decode('utf-8')
 
 

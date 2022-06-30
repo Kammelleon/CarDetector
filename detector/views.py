@@ -18,9 +18,7 @@ class FileUploader(View):
 
     def post(self, request):
         file = request.FILES["file"]
-        print(type(file))
         numpy_converted_file = np.fromstring(file.read(), np.uint8)
-        # FileUploader.uploaded_image = cv2.imdecode(numpy_converted_file, cv2.IMREAD_UNCHANGED)
         FileUploader.uploaded_image = numpy_converted_file
         if FileUploader.uploaded_image is None:
             # TODO: Add django message that file is not an image
@@ -32,7 +30,6 @@ class FileUploader(View):
 
 class ModelChooser(View):
     selected_model = None
-    rendered_image = None
 
     def get(self, request):
         detection_model_form = DetectionModelForm()
@@ -45,25 +42,22 @@ class ModelChooser(View):
         detection_model_form = DetectionModelForm(request.POST)
         if detection_model_form.is_valid():
             selected_model = detection_model_form.cleaned_data['model']
-            ModelChooser.selected_model = selected_model
-            if "yolov5" in selected_model:
-                from detector.yolo import Yolo
-                yolo = Yolo()
-                model_loaded = yolo.load(selected_model)
-                if model_loaded:
-                    successfully_performed_detection, rendered_image = yolo.perform_detection_on(
-                        FileUploader.uploaded_image)
-                    if successfully_performed_detection:
-                        ModelChooser.rendered_image = rendered_image
-                        return redirect("detector:image-previewer")
+            from detector.models.manager import ModelManager
+            model_manager = ModelManager(selected_model)
+            success, rendered_image = model_manager.perform_detection_on(FileUploader.uploaded_image)
+            if success:
+                ImagePreviewer.rendered_image = rendered_image
+                return redirect("detector:image-previewer")
             return redirect("detector:file-uploader")
         else:
             return redirect("detector:file-uploader")
 
 
 class ImagePreviewer(View):
+    rendered_image = None
+
     def get(self, request):
         context = {
-            "image": ModelChooser.rendered_image
+            "image": ImagePreviewer.rendered_image
         }
         return render(request, "detector/image_previewer.html", context=context)
