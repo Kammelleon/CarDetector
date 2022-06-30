@@ -33,46 +33,50 @@ class PretrainedModel:
         self.model.eval()
 
     def perform_detection_on(self, image):
-        image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        orig = image.copy()
+        try:
+            image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            orig = image.copy()
 
-        image = image.transpose((2, 0, 1))
+            image = image.transpose((2, 0, 1))
 
-        image = np.expand_dims(image, axis=0)
-        image = image / 255.0
-        image = torch.FloatTensor(image)
+            image = np.expand_dims(image, axis=0)
+            image = image / 255.0
+            image = torch.FloatTensor(image)
 
-        image = image.to(self.DEVICE)
-        detections = self.model(image)[0]
+            image = image.to(self.DEVICE)
+            detections = self.model(image)[0]
 
-        for i in range(0, len(detections["boxes"])):
+            for i in range(0, len(detections["boxes"])):
 
-            confidence = detections["scores"][i]
+                confidence = detections["scores"][i]
 
-            if confidence > self.MINIMUM_CONFIDENCE:
+                if confidence > self.MINIMUM_CONFIDENCE:
 
-                idx = int(detections["labels"][i])
+                    idx = int(detections["labels"][i])
 
-                if self.CLASSES[idx-1] != "car":
-                    continue
+                    if self.CLASSES[idx-1] != "car":
+                        continue
 
-                box = detections["boxes"][i].detach().cpu().numpy()
-                (startX, startY, endX, endY) = box.astype("int")
+                    box = detections["boxes"][i].detach().cpu().numpy()
+                    (startX, startY, endX, endY) = box.astype("int")
 
-                label = "{}: {:.2f}%".format(self.CLASSES[idx-1], confidence * 100)
-                print("[INFO] {}".format(label))
+                    label = "{}: {:.2f}%".format(self.CLASSES[idx-1], confidence * 100)
+                    print("[INFO] {}".format(label))
 
-                cv2.rectangle(orig, (startX, startY), (endX, endY),
-                              self.COLORS[idx], 2)
-                y = startY - 15 if startY - 15 > 15 else startY + 15
-                cv2.putText(orig, label, (startX, y),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.COLORS[idx], 2)
+                    cv2.rectangle(orig, (startX, startY), (endX, endY),
+                                  self.COLORS[idx], 2)
+                    y = startY - 15 if startY - 15 > 15 else startY + 15
+                    cv2.putText(orig, label, (startX, y),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.COLORS[idx], 2)
 
-        base64_image = self.ndarray_to_base64(orig)
+            base64_image = self.ndarray_to_base64(orig)
 
-        self.is_detection_successfully_performed = True
-        return self.is_detection_successfully_performed, base64_image
+            self.is_detection_successfully_performed = True
+            return self.is_detection_successfully_performed, base64_image
+        except Exception:
+            self.is_detection_successfully_performed = False
+            return self.is_detection_successfully_performed, None
 
     def ndarray_to_base64(self,ndarray):
         img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)

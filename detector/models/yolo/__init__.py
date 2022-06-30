@@ -36,7 +36,7 @@ class Yolo:
             return self.is_detection_successfully_performed, base64_image
         except Exception:
             self.is_detection_successfully_performed = False
-            return self.is_detection_successfully_performed
+            return self.is_detection_successfully_performed, None
 
     def ndarray_to_base64(self,ndarray):
         img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)

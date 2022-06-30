@@ -6,19 +6,16 @@ class ModelManager:
         if "yolov5" in self.model_name:
             from detector.models.yolo import Yolo
             yolo = Yolo()
-            yolo.load(self.model_name)
-            successfully_performed_detection, rendered_image = yolo.perform_detection_on(numpy_image)
-            if successfully_performed_detection:
-                return successfully_performed_detection, rendered_image
-            else:
-                return False, None
+            is_detection_successfully_performed, rendered_image = self._perform_detection(yolo, numpy_image)
+            return is_detection_successfully_performed, rendered_image
         else:
             from detector.models.pretrained_torch.model import PretrainedModel
             pretrained_model = PretrainedModel()
-            pretrained_model.load(self.model_name)
-            successfully_performed_detection, rendered_image = pretrained_model.perform_detection_on(numpy_image)
-            if successfully_performed_detection:
-                return successfully_performed_detection, rendered_image
-            else:
-                return False, None
+            is_detection_successfully_performed, rendered_image = self._perform_detection(pretrained_model, numpy_image)
+            return is_detection_successfully_performed, rendered_image
+
+    def _perform_detection(self, initialized_model, numpy_image):
+        initialized_model.load(self.model_name)
+        is_detection_successfully_performed, rendered_image = initialized_model.perform_detection_on(numpy_image)
+        return is_detection_successfully_performed, rendered_image
 
