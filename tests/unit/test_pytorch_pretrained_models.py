@@ -1,6 +1,9 @@
+import numpy
 import pytest
+import torch
+
 from detector.models.pretrained_pytorch.model import PretrainedModel, PretrainedModelNotFoundError, DatasetError, \
-    DatasetNotFoundError
+    DatasetNotFoundError, ImageLoadError
 
 
 class TestClass:
@@ -43,4 +46,30 @@ class TestClass:
     def test_load_dataset_that_doesnt_contain_91_classes(self):
         with pytest.raises(DatasetError):
             PretrainedModel(coco_dataset_location="../test_files/90_class_coco_dataset.pickle")
+
+    def test_preprocess_correct_image(self, pretrained_model):
+        # given
+        pytorch_pretrained_model = pretrained_model
+
+        image = "../test_files/car.jpg"
+        # when
+        preprocessed_image, original_image = pytorch_pretrained_model._preprocess_image(image, image_from_numpy=False)
+
+        # then
+        assert isinstance(preprocessed_image, torch.Tensor)
+        assert isinstance(original_image, numpy.ndarray)
+
+    def test_preprocess_image_that_doesnt_exists(self, pretrained_model):
+        pytorch_pretrained_model = pretrained_model
+        image = "file_that_doesnt_exists"
+        # when
+        with pytest.raises(ImageLoadError):
+            pytorch_pretrained_model._preprocess_image(image, image_from_numpy=False)
+
+    def test_preprocess_fake_image_like_file(self, pretrained_model):
+        pytorch_pretrained_model = pretrained_model
+        image = "../test_files/car_empty.jpg"
+        # when
+        with pytest.raises(ImageLoadError):
+            pytorch_pretrained_model._preprocess_image(image, image_from_numpy=False)
 

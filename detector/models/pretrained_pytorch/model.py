@@ -87,7 +87,7 @@ class PretrainedModel:
 
         return self.is_detection_successfully_performed, base64_image
 
-    def _load_dataset(self, coco_dataset_location) -> None:
+    def _load_dataset(self, coco_dataset_location: str) -> None:
         try:
             self.CLASSES = pickle.loads(open(coco_dataset_location, "rb").read())
             if len(self.CLASSES) != 91:
@@ -105,10 +105,17 @@ class PretrainedModel:
         _, buffer = cv2.imencode('.png', img)
         return base64.b64encode(buffer).decode('utf-8')
 
-    def _preprocess_image(self, numpy_image: numpy.ndarray) -> tuple[torch.Tensor, numpy.ndarray] or tuple[bool, None]:
+    def _preprocess_image(self, numpy_image: numpy.ndarray or str, image_from_numpy: bool = True) -> tuple[torch.Tensor, numpy.ndarray]:
         try:
-            image = cv2.imdecode(numpy_image, cv2.IMREAD_UNCHANGED)
+            if image_from_numpy:
+                image = cv2.imdecode(numpy_image, cv2.IMREAD_UNCHANGED)
+            else:
+                image = cv2.imread(numpy_image, cv2.IMREAD_UNCHANGED)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        except cv2.error:
+            self.is_detection_successfully_performed = False
+            raise ImageLoadError("Ensure your image exists in given location or is correct image-like file.")
+        try:
             original_image = image.copy()
 
             image = image.transpose((2, 0, 1))
@@ -120,14 +127,11 @@ class PretrainedModel:
             preprocessed_image = image.to(self.DEVICE)
 
             return preprocessed_image, original_image
-        except cv2.error:
-            self.is_detection_successfully_performed = False
-            return self.is_detection_successfully_performed, None
         except Exception:
             print("Another exception:")
             print(traceback.print_exc())
             self.is_detection_successfully_performed = False
-            return self.is_detection_successfully_performed, None
+            raise Exception("Error during processing image")
 
 
 class PretrainedModelNotFoundError(Exception):
@@ -137,4 +141,7 @@ class DatasetNotFoundError(Exception):
     pass
 
 class DatasetError(Exception):
+    pass
+
+class ImageLoadError(Exception):
     pass
