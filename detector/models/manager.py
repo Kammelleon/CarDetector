@@ -9,7 +9,7 @@ class ModelManager:
             is_detection_successfully_performed, rendered_image = self._perform_detection(yolo, numpy_image)
             return is_detection_successfully_performed, rendered_image
         else:
-            from detector.models.pretrained_torch.model import PretrainedModel
+            from detector.models.pretrained_pytorch.model import PretrainedModel
             pretrained_model = PretrainedModel()
             is_detection_successfully_performed, rendered_image = self._perform_detection(pretrained_model, numpy_image)
             return is_detection_successfully_performed, rendered_image

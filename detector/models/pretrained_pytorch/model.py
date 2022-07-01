@@ -1,5 +1,7 @@
 import base64
+import traceback
 
+import numpy
 from torchvision.models import detection
 import numpy as np
 import pickle
@@ -8,12 +10,12 @@ import cv2
 
 
 class PretrainedModel:
-    def __init__(self):
+    def __init__(self, coco_dataset_location="./detector/models/pretrained_pytorch/wrong_coco_dataset.pickle"):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.CLASSES = pickle.loads(open("./detector/models/pretrained_torch/coco_dataset.pickle", "rb").read())
-        self.COLORS = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
+        self.CLASSES = None
+        self.COLORS = None
         self.MINIMUM_CONFIDENCE = 0.7
-
+        self.coco_dataset_location = coco_dataset_location
         self.MODELS = {
             "frcnn-resnet": detection.fasterrcnn_resnet50_fpn,
             "high-res-frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_fpn,
@@ -25,16 +27,26 @@ class PretrainedModel:
         }
 
         self.model = None
+        self.is_model_loaded = False
         self.is_detection_successfully_performed = False
 
-    def load(self, pretrained_model_name: str):
-        self.model = self.MODELS[pretrained_model_name](pretrained=True,
-                                                        progress=True,
-                                                        num_classes=len(self.CLASSES),
-                                                        pretrained_backbone=True).to(self.DEVICE)
-        self.model.eval()
+        self._load_dataset(coco_dataset_location)
+        self._generate_colors()
 
-    def perform_detection_on(self, image):
+    def load(self, pretrained_model_name: str) -> None:
+        try:
+            self.model = self.MODELS[pretrained_model_name](pretrained=True,
+                                                            progress=True,
+                                                            num_classes=len(self.CLASSES),
+                                                            pretrained_backbone=True).to(self.DEVICE)
+            self.model.eval()
+            self.is_model_loaded = True
+        except KeyError:
+            self.is_model_loaded = False
+            raise PretrainedModelNotFoundError(f"Selected model: {pretrained_model_name} has not been found in "
+                                               f"PyTorch pretrained models library")
+
+    def perform_detection_on(self, image: numpy.ndarray) -> str:
         preprocessed_image, original_image = self._preprocess_image(image)
 
         detections = self.model(preprocessed_image)[0]
@@ -69,17 +81,31 @@ class PretrainedModel:
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, self.COLORS[idx], 2)
 
         # Base64 format of image is required to show detection in HTML <img> tag
-        base64_image = self._ndarray_to_base64(original_image)
+        base64_image = self._ndarray_to_base64_string(original_image)
 
         self.is_detection_successfully_performed = True
+
         return self.is_detection_successfully_performed, base64_image
 
-    def _ndarray_to_base64(self, ndarray):
+    def _load_dataset(self, coco_dataset_location) -> None:
+        try:
+            self.CLASSES = pickle.loads(open(coco_dataset_location, "rb").read())
+            if len(self.CLASSES) != 91:
+                raise DatasetError(f"Dataset must contain exactly 91 classes. Your dataset contains: {len(self.CLASSES)}")
+        except FileNotFoundError:
+            raise DatasetNotFoundError(f"Dataset has not been found in given location: {self.coco_dataset_location}")
+        except pickle.UnpicklingError:
+            raise DatasetError(f"Cannot unpickle given dataset: {self.coco_dataset_location}")
+
+    def _generate_colors(self) -> None:
+        self.COLORS = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
+
+    def _ndarray_to_base64_string(self, ndarray: numpy.ndarray) -> str:
         img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)
         _, buffer = cv2.imencode('.png', img)
         return base64.b64encode(buffer).decode('utf-8')
 
-    def _preprocess_image(self, numpy_image):
+    def _preprocess_image(self, numpy_image: numpy.ndarray) -> tuple[torch.Tensor, numpy.ndarray] or tuple[bool, None]:
         try:
             image = cv2.imdecode(numpy_image, cv2.IMREAD_UNCHANGED)
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -92,7 +118,23 @@ class PretrainedModel:
             image = torch.FloatTensor(image)
 
             preprocessed_image = image.to(self.DEVICE)
+
             return preprocessed_image, original_image
-        except Exception:
+        except cv2.error:
             self.is_detection_successfully_performed = False
             return self.is_detection_successfully_performed, None
+        except Exception:
+            print("Another exception:")
+            print(traceback.print_exc())
+            self.is_detection_successfully_performed = False
+            return self.is_detection_successfully_performed, None
+
+
+class PretrainedModelNotFoundError(Exception):
+    pass
+
+class DatasetNotFoundError(Exception):
+    pass
+
+class DatasetError(Exception):
+    pass
