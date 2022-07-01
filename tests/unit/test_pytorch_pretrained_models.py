@@ -3,7 +3,7 @@ import pytest
 import torch
 
 from detector.models.pretrained_pytorch.model import PretrainedModel, PretrainedModelNotFoundError, DatasetError, \
-    DatasetNotFoundError, ImageLoadError
+    DatasetNotFoundError, ImageLoadError, ImageConversionError
 
 
 class TestClass:
@@ -72,4 +72,9 @@ class TestClass:
         # when
         with pytest.raises(ImageLoadError):
             pytorch_pretrained_model._preprocess_image(image, image_from_numpy=False)
+
+    def test_numpy_to_base64_conversion_on_wrong_image(self, pretrained_model):
+        image = "invalid_image"
+        with pytest.raises(ImageConversionError):
+            pretrained_model._ndarray_to_base64_string(image)
 

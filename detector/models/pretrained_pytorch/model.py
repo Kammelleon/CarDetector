@@ -10,7 +10,7 @@ import cv2
 
 
 class PretrainedModel:
-    def __init__(self, coco_dataset_location="./detector/models/pretrained_pytorch/wrong_coco_dataset.pickle"):
+    def __init__(self, coco_dataset_location="./detector/models/pretrained_pytorch/coco_dataset.pickle"):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.CLASSES = None
         self.COLORS = None
@@ -45,6 +45,9 @@ class PretrainedModel:
             self.is_model_loaded = False
             raise PretrainedModelNotFoundError(f"Selected model: {pretrained_model_name} has not been found in "
                                                f"PyTorch pretrained models library")
+        except Exception:
+            self.is_model_loaded = False
+            raise Exception(f"Another exception occured: {traceback.format_exc()}")
 
     def perform_detection_on(self, image: numpy.ndarray) -> str:
         preprocessed_image, original_image = self._preprocess_image(image)
@@ -101,9 +104,12 @@ class PretrainedModel:
         self.COLORS = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
 
     def _ndarray_to_base64_string(self, ndarray: numpy.ndarray) -> str:
-        img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)
-        _, buffer = cv2.imencode('.png', img)
-        return base64.b64encode(buffer).decode('utf-8')
+        try:
+            img = cv2.cvtColor(ndarray, cv2.COLOR_RGB2BGR)
+            _, buffer = cv2.imencode('.png', img)
+            return base64.b64encode(buffer).decode('utf-8')
+        except cv2.error:
+            raise ImageConversionError("Ensure that your image is correct and is of type numpy.ndarray")
 
     def _preprocess_image(self, numpy_image: numpy.ndarray or str, image_from_numpy: bool = True) -> tuple[torch.Tensor, numpy.ndarray]:
         try:
@@ -144,4 +150,7 @@ class DatasetError(Exception):
     pass
 
 class ImageLoadError(Exception):
+    pass
+
+class ImageConversionError(Exception):
     pass

@@ -1,6 +1,5 @@
-
 import pytest
-from detector.models.yolo import Yolo
+from detector.models.yolo import Yolo, YoloModelLoadError, ImageConversionError, ImageLoadError
 
 
 class TestClass:
@@ -31,10 +30,10 @@ class TestClass:
         yolo = yolo_model
 
         # when
-        yolo.load("incorrect_yolo_model")
+        with pytest.raises(YoloModelLoadError):
+            yolo.load("incorrect_yolo_model")
 
         # then
-        assert yolo.model is None
         assert yolo.is_model_loaded is False
 
     def test_detection_performed_on_valid_image(self, yolo_loaded_model):
@@ -52,7 +51,14 @@ class TestClass:
         image = "../test_files/car_empty.jpg"
 
         # when
-        yolo_loaded_model.perform_detection_on(image, image_from_numpy=False)
+        with pytest.raises(ImageLoadError):
+            yolo_loaded_model.perform_detection_on(image, image_from_numpy=False)
 
         # then
         assert yolo_loaded_model.is_detection_successfully_performed is False
+
+    def test_numpy_to_base64_conversion_on_wrong_image(self, yolo_loaded_model):
+        image = "invalid_image"
+        with pytest.raises(ImageConversionError):
+            yolo_loaded_model._ndarray_to_base64(image)
+
