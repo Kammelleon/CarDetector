@@ -60,5 +60,5 @@ class TestClass:
     def test_numpy_to_base64_conversion_on_wrong_image(self, yolo_loaded_model):
         image = "invalid_image"
         with pytest.raises(ImageConversionError):
-            yolo_loaded_model._ndarray_to_base64(image)
+            yolo_loaded_model._ndarray_to_base64_string(image)
 

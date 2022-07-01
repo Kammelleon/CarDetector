@@ -1,11 +1,12 @@
 import base64
 
+import django.utils.datastructures
 from django.core.files import File
 from django.shortcuts import render, redirect
 import cv2
 import numpy as np
 from django.views import View
-
+from django.contrib import messages
 from .forms import DetectionModelForm
 
 
@@ -17,7 +18,11 @@ class FileUploader(View):
         return render(request, "detector/file_uploader.html")
 
     def post(self, request):
-        file = request.FILES["file"]
+        try:
+            file = request.FILES["file"]
+        except django.utils.datastructures.MultiValueDictKeyError:
+            messages.error(request, "No image has been uploaded")
+            return redirect("detector:file-uploader")
         numpy_converted_file = np.fromstring(file.read(), np.uint8)
         FileUploader.uploaded_image = numpy_converted_file
         if FileUploader.uploaded_image is None:
@@ -44,7 +49,11 @@ class ModelChooser(View):
             selected_model = detection_model_form.cleaned_data['model']
             from detector.models.manager import ModelManager
             model_manager = ModelManager(selected_model)
-            success, rendered_image = model_manager.perform_detection_on(FileUploader.uploaded_image)
+            try:
+                success, rendered_image = model_manager.perform_detection_on(FileUploader.uploaded_image)
+            except Exception as e:
+                messages.error(request, str(e))
+                return redirect("detector:file-uploader")
             if success:
                 ImagePreviewer.rendered_image = rendered_image
                 return redirect("detector:image-previewer")

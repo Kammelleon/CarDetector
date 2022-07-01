@@ -88,7 +88,7 @@ class PretrainedModel:
 
         self.is_detection_successfully_performed = True
 
-        return self.is_detection_successfully_performed, base64_image
+        return base64_image
 
     def _load_dataset(self, coco_dataset_location: str) -> None:
         try:

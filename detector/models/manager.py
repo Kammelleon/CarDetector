@@ -16,6 +16,6 @@ class ModelManager:
 
     def _perform_detection(self, initialized_model, numpy_image):
         initialized_model.load(self.model_name)
-        is_detection_successfully_performed, rendered_image = initialized_model.perform_detection_on(numpy_image)
-        return is_detection_successfully_performed, rendered_image
+        rendered_image = initialized_model.perform_detection_on(numpy_image)
+        return initialized_model.is_detection_successfully_performed, rendered_image
 

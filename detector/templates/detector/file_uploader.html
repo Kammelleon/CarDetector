@@ -9,6 +9,13 @@
 <body>
 <script type="text/javascript" src="{% static 'detector/jquery-3.6.0.js' %}"></script>
 <h1 id="upload-title">Upload an image</h1>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
   <input type="file" accept=".png, .jpg, .jpeg" name="file" id="dragndrop" required>
@@ -21,7 +28,7 @@
           var filename = $('input[type=file]').val().split('\\').pop();
           if(filename.endsWith(".png") || filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
           {
-              $('form p').text("Selected file:\n"+filename);
+              $('form p').text(filename);
           }
           else if(filename===""){
               $('form p').text("Drag an image file here or click to select an image");
@@ -29,6 +36,7 @@
           else{
               $('form p').text("It is not an image-like file! Try again.");
               alert("You have uploaded a file that is not an image. Try again and make sure that your file extension is: .jpg, .jpeg or .png")
+              $("#dragndrop").val('');
           }
       });
 });
