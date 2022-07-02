@@ -11,6 +11,27 @@ body{
   background-repeat: no-repeat;
     background-attachment: fixed;
 }
+.hideme {
+  display: none;
+}
+.showme {
+  display: block;
+}
+.loader{
+  position: absolute;
+  height: 100px;
+  width: 20%;
+  top:40%;
+  left:47.5%;
+}
+
+/*
+  Set the color of the icon
+*/
+svg path,
+svg rect{
+  fill: white;
+}
 
 h1{
   text-align: center;

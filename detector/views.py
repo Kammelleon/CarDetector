@@ -13,7 +13,6 @@ from .forms import DetectionModelForm, UploadForm
 
 class FileUploader(View):
     uploaded_image = None
-    base64_image = None
 
     def get(self, request):
         form = UploadForm()
