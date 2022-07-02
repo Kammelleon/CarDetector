@@ -37,7 +37,6 @@ class Yolo:
 
             result = self.model(image)
             number_of_detections = len(result.pandas().xyxy[0])
-            print(number_of_detections)
             result.render()
             rendered_image = result.imgs[0]
             base64_image = self._ndarray_to_base64_string(rendered_image)

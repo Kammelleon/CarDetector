@@ -23,15 +23,13 @@ class FileUploader(View):
     def post(self, request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            print("Form is valid")
-            file = request.FILES["image"]
+            file = form.cleaned_data["image"]
             numpy_converted_file = np.fromstring(file.read(), np.uint8)
             FileUploader.uploaded_image = numpy_converted_file
-            return HttpResponse(json.dumps({"redirect_url":"/model/"}))
+            return HttpResponse(json.dumps({"redirect_url": "/model/"}))
         else:
-            print("Form invalid")
-            messages.error(request,"Incorrect image-like file. Try again.")
-            return HttpResponse(json.dumps({"redirect_url":"/"}))
+            messages.error(request, "Incorrect image-like file. Try again.")
+            return HttpResponse(json.dumps({"redirect_url": "/"}))
 
 
 class ModelChooser(View):
@@ -53,14 +51,16 @@ class ModelChooser(View):
             try:
                 rendered_image, number_of_detections = model_manager.perform_detection_on(FileUploader.uploaded_image)
             except Exception as e:
-                messages.error(request, str(e))
+                messages.error(request, f"An error occured during performing detection: {e}")
                 return redirect("detector:file-uploader")
             if model_manager.is_detection_successful:
                 ImagePreviewer.rendered_image = rendered_image
                 ImagePreviewer.number_of_detections = number_of_detections
                 return redirect("detector:image-previewer")
+            messages.error(request, "Detection was not successfully performed. Try again.")
             return redirect("detector:file-uploader")
         else:
+            messages.error(request, "Selected pretrained model doesn't exists. Try again.")
             return redirect("detector:file-uploader")
 
 
@@ -69,8 +69,13 @@ class ImagePreviewer(View):
     number_of_detections = 0
 
     def get(self, request):
-        context = {
-            "image": ImagePreviewer.rendered_image,
-            "number_of_detections":ImagePreviewer.number_of_detections
-        }
-        return render(request, "detector/image_previewer.html", context=context)
+        if ImagePreviewer.rendered_image is not None:
+            print("IS NOT NONE")
+            context = {
+                "image": ImagePreviewer.rendered_image,
+                "number_of_detections": ImagePreviewer.number_of_detections
+            }
+            return render(request, "detector/image_previewer.html", context=context)
+        else:
+            messages.error(request, "No image has been uploaded")
+            return redirect("detector:file-uploader")

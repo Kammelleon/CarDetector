@@ -69,12 +69,14 @@ class PretrainedModel:
 
                 if self.CLASSES[idx] != "car":
                     continue
+
                 number_of_detections += 1
+
                 bounding_box_coordinates = detections["boxes"][i].detach().cpu().numpy()
                 (start_x, start_y, end_x, end_y) = bounding_box_coordinates.astype("int")
 
                 label = f"{self.CLASSES[idx]}: {confidence * 100:.2f}%"
-                print("[INFO] {}".format(label))
+                print(f"[INFO] {label}")
 
                 # Draw bounding box on original image
                 cv2.rectangle(original_image, (start_x, start_y), (end_x, end_y),
