@@ -17,13 +17,28 @@
     }
 </style>
 <body>
+<div class="navigation_menu" id="navigation_menu">
+  <ul class="navigation_tabs" id="navigation_tabs">
+    <li class="tab_active">
+        Upload image
+    </li>
+    <li class="tab_disabled">
+        Choose pretrained model
+    </li>
+    <li class="tab_disabled">
+        Check result
+    </li>
+  </ul>
+</div>
+
+<h1>Upload an image</h1>
     <form method="post" id="upload-form">
         {% csrf_token %}
         {{form.image}}
-        <p>Select image or drag it here</p>
+        <p>Select an image or drag it here</p>
         <button type="submit">Upload</button>
     </form>
-    <div id="progress-barer">
+    <div id="progress-bar-container">
         <div class="container not-visible progress" id="progress">
             <div class="progress-bar bg-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
@@ -51,7 +66,7 @@
 });
         const uploadForm = document.getElementById('upload-form');
         const input_file = document.getElementById('dragndrop');
-        const progress_bar = document.getElementById('progress-barer');
+        const progress_bar = document.getElementById('progress-bar-container');
 
         $("#upload-form").submit(function(e){
             e.preventDefault();
@@ -76,7 +91,7 @@
                         if(e.lengthComputable){
                             const percentProgress = (e.loaded/e.total)*100;
                             console.log(percentProgress);
-                            progress_bar.innerHTML = `<div class="progress" id="progress"><div class="progress-bar progress-bar-striped bg-success"
+                            progress_bar.innerHTML = `<div class="progress" id="progress"><div class="progress-bar progress-bar-striped"
                     role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0"
                     aria-valuemax="100">${percentProgress}</div></div>`
                         }
