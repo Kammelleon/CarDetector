@@ -1,11 +1,6 @@
-import base64
 import json
-
-import django.utils.datastructures
-from django.core.files import File
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
-import cv2
 import numpy as np
 from django.views import View
 from django.contrib import messages
@@ -70,7 +65,6 @@ class ImagePreviewer(View):
 
     def get(self, request):
         if ImagePreviewer.rendered_image is not None:
-            print("IS NOT NONE")
             context = {
                 "image": ImagePreviewer.rendered_image,
                 "number_of_detections": ImagePreviewer.number_of_detections
