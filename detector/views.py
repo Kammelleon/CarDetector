@@ -2,12 +2,13 @@ import base64
 
 import django.utils.datastructures
 from django.core.files import File
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 import cv2
 import numpy as np
 from django.views import View
 from django.contrib import messages
-from .forms import DetectionModelForm
+from .forms import DetectionModelForm, UploadForm
 
 
 class FileUploader(View):
@@ -15,14 +16,19 @@ class FileUploader(View):
     base64_image = None
 
     def get(self, request):
-        return render(request, "detector/file_uploader.html")
+        form = UploadForm()
+        context = {'form': form}
+        return render(request, "detector/file_uploader.html", context)
 
     def post(self, request):
-        try:
-            file = request.FILES["file"]
-        except django.utils.datastructures.MultiValueDictKeyError:
-            messages.error(request, "No image has been uploaded")
-            return redirect("detector:file-uploader")
+        form = UploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["image"]
+        # try:
+        #     file = request.FILES["file"]
+        # except django.utils.datastructures.MultiValueDictKeyError:
+        #     messages.error(request, "No image has been uploaded")
+        #     return redirect("detector:file-uploader")
         numpy_converted_file = np.fromstring(file.read(), np.uint8)
         FileUploader.uploaded_image = numpy_converted_file
         if FileUploader.uploaded_image is None:

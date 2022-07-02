@@ -15,3 +15,6 @@ class DetectionModelForm(forms.Form):
                ('yolov5x', 'YOLOv5 (extra large)')]
 
     model = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
+
+class UploadForm(forms.Form):
+    image = forms.ImageField(widget=forms.FileInput(attrs={"id": "dragndrop", "accept":".png, .jpg, .jpeg"}))
