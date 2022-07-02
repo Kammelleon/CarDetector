@@ -10,7 +10,7 @@ import cv2
 
 
 class PretrainedModel:
-    def __init__(self, coco_dataset_location="./detector/models/pretrained_pytorch/coco_dataset.pickle"):
+    def __init__(self, coco_dataset_location: str = "./detector/models/pretrained_pytorch/coco_dataset.pickle"):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.CLASSES = None
         self.COLORS = None
@@ -49,10 +49,12 @@ class PretrainedModel:
             self.is_model_loaded = False
             raise Exception(f"Another exception occured: {traceback.format_exc()}")
 
-    def perform_detection_on(self, image: numpy.ndarray) -> str:
+    def perform_detection_on(self, image: numpy.ndarray) -> tuple[str, int]:
         preprocessed_image, original_image = self._preprocess_image(image)
 
         detections = self.model(preprocessed_image)[0]
+
+        number_of_detections = 0
 
         for i in range(0, len(detections["boxes"])):
 
@@ -67,7 +69,7 @@ class PretrainedModel:
 
                 if self.CLASSES[idx] != "car":
                     continue
-
+                number_of_detections += 1
                 bounding_box_coordinates = detections["boxes"][i].detach().cpu().numpy()
                 (start_x, start_y, end_x, end_y) = bounding_box_coordinates.astype("int")
 
@@ -87,8 +89,7 @@ class PretrainedModel:
         base64_image = self._ndarray_to_base64_string(original_image)
 
         self.is_detection_successfully_performed = True
-
-        return base64_image
+        return base64_image, number_of_detections
 
     def _load_dataset(self, coco_dataset_location: str) -> None:
         try:

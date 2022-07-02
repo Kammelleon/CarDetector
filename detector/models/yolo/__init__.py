@@ -23,7 +23,7 @@ class Yolo:
             self.is_model_loaded = False
             raise YoloModelLoadError(f"Could not load given model type: {model_type}")
 
-    def perform_detection_on(self, image: numpy.ndarray or str, image_from_numpy: bool = True):
+    def perform_detection_on(self, image: numpy.ndarray or str, image_from_numpy: bool = True) -> tuple[str, int]:
         try:
             if image_from_numpy:
                 image = cv2.imdecode(image, cv2.IMREAD_UNCHANGED)
@@ -34,12 +34,15 @@ class Yolo:
             self.is_detection_successfully_performed = False
             raise ImageLoadError("Ensure your image exists in given location or is correct image-like file.")
         try:
+
             result = self.model(image)
+            number_of_detections = len(result.pandas().xyxy[0])
+            print(number_of_detections)
             result.render()
             rendered_image = result.imgs[0]
             base64_image = self._ndarray_to_base64_string(rendered_image)
             self.is_detection_successfully_performed = True
-            return base64_image
+            return base64_image, number_of_detections
         except Exception:
             self.is_detection_successfully_performed = False
             raise Exception(f"Another exception occured: {traceback.format_exc()}")

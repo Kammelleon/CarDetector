@@ -52,6 +52,7 @@
           $(document).ready(function(){
       $('form input').change(function () {
           var filename = $('input[type=file]').val().split('\\').pop();
+          filename = filename.toLowerCase();
 
           if(filename.endsWith(".png") || filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
           {

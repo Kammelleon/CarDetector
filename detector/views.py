@@ -55,11 +55,11 @@ class ModelChooser(View):
             from detector.models.manager import ModelManager
             model_manager = ModelManager(selected_model)
             try:
-                success, rendered_image = model_manager.perform_detection_on(FileUploader.uploaded_image)
+                rendered_image, number_of_detections = model_manager.perform_detection_on(FileUploader.uploaded_image)
             except Exception as e:
                 messages.error(request, str(e))
                 return redirect("detector:file-uploader")
-            if success:
+            if model_manager.is_detection_successful:
                 ImagePreviewer.rendered_image = rendered_image
                 return redirect("detector:image-previewer")
             return redirect("detector:file-uploader")
