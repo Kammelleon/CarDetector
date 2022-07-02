@@ -17,7 +17,19 @@ h1{
   letter-spacing: 1.2px;
   margin-top: 4.5%;
 }
-
+.messages{
+  margin-left: 1vw;
+  width:18vw;
+  background: rgba( 255, 255, 255, 0.25 );
+box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+backdrop-filter: blur( 7.5px );
+-webkit-backdrop-filter: blur( 7.5px );
+border-radius: 10px;
+border: 1px solid rgba( 255, 255, 255, 0.18 );
+  color:white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
 form{
   cursor:pointer;
   position: absolute;

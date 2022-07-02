@@ -7,5 +7,10 @@
 <body>
     <h1>Preview of your image:</h1>
 <img src="data:image/jpg;base64, {{ image }}">
+{% if number_of_detections >= 1 %}
+    <p>Number of detected objects: {{ number_of_detections }}</p>
+{% else %}
+    <p>No detections</p>
+{% endif %}
 </body>
 </html>

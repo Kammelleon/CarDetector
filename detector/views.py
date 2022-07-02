@@ -1,8 +1,9 @@
 import base64
+import json
 
 import django.utils.datastructures
 from django.core.files import File
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 import cv2
 import numpy as np
@@ -22,20 +23,15 @@ class FileUploader(View):
     def post(self, request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
+            print("Form is valid")
             file = request.FILES["image"]
-        # try:
-        #     file = request.FILES["file"]
-        # except django.utils.datastructures.MultiValueDictKeyError:
-        #     messages.error(request, "No image has been uploaded")
-        #     return redirect("detector:file-uploader")
-        numpy_converted_file = np.fromstring(file.read(), np.uint8)
-        FileUploader.uploaded_image = numpy_converted_file
-        if FileUploader.uploaded_image is None:
-            # TODO: Add django message that file is not an image
-            # TODO: Redirect back to upload site
-            print("It is not an image")
+            numpy_converted_file = np.fromstring(file.read(), np.uint8)
+            FileUploader.uploaded_image = numpy_converted_file
+            return HttpResponse(json.dumps({"redirect_url":"/model/"}))
         else:
-            return redirect('detector:model-chooser')
+            print("Form invalid")
+            messages.error(request,"Incorrect image-like file. Try again.")
+            return HttpResponse(json.dumps({"redirect_url":"/"}))
 
 
 class ModelChooser(View):
@@ -61,6 +57,7 @@ class ModelChooser(View):
                 return redirect("detector:file-uploader")
             if model_manager.is_detection_successful:
                 ImagePreviewer.rendered_image = rendered_image
+                ImagePreviewer.number_of_detections = number_of_detections
                 return redirect("detector:image-previewer")
             return redirect("detector:file-uploader")
         else:
@@ -69,9 +66,11 @@ class ModelChooser(View):
 
 class ImagePreviewer(View):
     rendered_image = None
+    number_of_detections = 0
 
     def get(self, request):
         context = {
-            "image": ImagePreviewer.rendered_image
+            "image": ImagePreviewer.rendered_image,
+            "number_of_detections":ImagePreviewer.number_of_detections
         }
         return render(request, "detector/image_previewer.html", context=context)
