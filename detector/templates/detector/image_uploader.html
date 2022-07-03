@@ -1,140 +1,141 @@
+{% extends 'detector/base.html' %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" type="image/png" href="{% static 'detector/favicon/favicon_car.ico' %}"/>
-    <title>Car Detector - Upload an image</title>
+
+{% block title %}
+    Car Detector - Upload an image
+{% endblock %}
+
+{% block head %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'detector/css/image_uploader_style.css' %}">
     <link rel="stylesheet" href="{% static 'detector/css/horizontal_progress_bar_style.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</head>
-<style>
-    .not-visible{
-        display: none;
-    }
-</style>
-<body>
-<div class="navigation_menu" id="navigation_menu">
-  <ul class="navigation_tabs" id="navigation_tabs">
-    <li class="tab_active">
-        Upload image
-    </li>
-    <li class="tab_disabled">
-        Choose pretrained model
-    </li>
-    <li class="tab_disabled">
-        Perform detection
-    </li>
-    <li class="tab_disabled">
-        Check result
-    </li>
-  </ul>
-</div>
-<h1>Upload an image</h1>
-    <form method="post" id="upload-form">
-        {% csrf_token %}
-        {{form.image}}
-        <p>Select an image or drag it here</p>
-        <button type="submit">Upload</button>
-    </form>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-    {% endfor %}
-</ul>
-{% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+{% endblock %}
+{% block body %}
+    <div class="navigation_menu" id="navigation_menu">
+        <ul class="navigation_tabs" id="navigation_tabs">
+            <li class="tab_active">
+                Upload image
+            </li>
+            <li class="tab_disabled">
+                Choose pretrained model
+            </li>
+            <li class="tab_disabled">
+                Perform detection
+            </li>
+            <li class="tab_disabled">
+                Check result
+            </li>
+        </ul>
+    </div>
+    <h1>Upload an image</h1>
+        <form method="post" id="upload-form">
+            {% csrf_token %}
+            {{form.image}}
+            <p>Select an image or drag it here</p>
+            <button type="submit">Upload</button>
+        </form>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     <div id="progress-bar-container">
         <div class="container not-visible progress" id="progress">
             <div class="progress-bar bg-info" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
     </div>
     <script>
-          $(document).ready(function(){
-      $('form input').change(function () {
-          var filename = $('input[type=file]').val().split('\\').pop();
-          filename = filename.toLowerCase();
+        $(document).ready(function()
+        {
+            $('form input').change(function ()
+            {
+              var filename = $('input[type=file]').val().split('\\').pop();
+              filename = filename.toLowerCase();
 
-          if(filename.endsWith(".png") || filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
-          {
-              $('form p').text(filename);
-          }
-          else if(filename===""){
-              $('form p').text("Select an image or drag it here");
-          }
-          else{
-              $('form p').text("It is not an image-like file! Try again.");
-              alert("You have uploaded a file that is not an image. Try again and make sure that your file extension is: .jpg, .jpeg or .png")
-              $("#dragndrop").val('');
-          }
-
-      });
-      $('#dragndrop').bind('change', function() {
-          //this.files[0].size gets the size of your file.
-
-          if(this.files[0].size === 0){
-              alert("Uploaded image has a size that is equal to 0")
-              $("#dragndrop").val('');
-              $('form p').text("Select an image or drag it here");
-          }
-    });
-});
+              if(filename.endsWith(".png") || filename.endsWith(".jpg") || filename.endsWith(".jpeg"))
+              {
+                  $('form p').text(filename);
+              }
+              else if(filename===""){
+                  $('form p').text("Select an image or drag it here");
+              }
+              else
+              {
+                  $('form p').text("It is not an image-like file! Try again.");
+                  alert("You have uploaded a file that is not an image. Try again and make sure that your file extension is: .jpg, .jpeg or .png")
+                  $("#dragndrop").val('');
+              }
+            });
+            $('#dragndrop').bind('change', function()
+            {
+              if(this.files[0].size === 0)
+              {
+                  alert("Uploaded image has a size that is equal to 0")
+                  $("#dragndrop").val('');
+                  $('form p').text("Select an image or drag it here");
+              }
+            });
+        });
         const uploadForm = document.getElementById('upload-form');
         const input_file = document.getElementById('dragndrop');
         const progress_bar = document.getElementById('progress-bar-container');
 
-        $("#upload-form").submit(function(e){
+        $("#upload-form").submit(function(e)
+        {
             e.preventDefault();
             $form = $(this)
             var formData = new FormData(this);
             const media_data = input_file.files[0];
-            if(media_data != null){
+            if(media_data != null)
+            {
                 console.log(media_data);
                 progress_bar.classList.remove("not-visible");
             }
 
             $.ajax({
-                type: 'POST',
-                url:'/',
-                data: formData,
-                beforeSend: function(){
-
-                },
-                xhr:function(){
-                    const xhr = new window.XMLHttpRequest();
-                    xhr.upload.addEventListener('progress', e=>{
-                        if(e.lengthComputable){
-                            const percentProgress = (e.loaded/e.total)*100;
-                            console.log(percentProgress);
-                            progress_bar.innerHTML = `<div class="progress" id="progress"><div class="progress-bar progress-bar-striped"
-                    role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0"
-                    aria-valuemax="100">${percentProgress}</div></div>`
-                        }
-                    });
-                    return xhr
-                },
-                success: function(response){
-                    var responseObj = JSON.parse(response);
-                    uploadForm.reset()
-                    window.location.href = responseObj["redirect_url"]
-                },
-                error: function(response){
-                    var responseObj = JSON.parse(response);
-                    uploadForm.reset()
-                    window.location.href = responseObj
-                },
-                cache: false,
-                contentType: false,
-                processData: false,
+                    type: 'POST',
+                    url:'/',
+                    data: formData,
+                    beforeSend: function(){},
+                    xhr:function()
+                    {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener('progress', e=>
+                        {
+                            if(e.lengthComputable)
+                            {
+                                const percentProgress = (e.loaded/e.total)*100;
+                                console.log(percentProgress);
+                                progress_bar.innerHTML = `<div class="progress" id="progress"><div class="progress-bar progress-bar-striped"
+                        role="progressbar" style="width: ${percentProgress}%" aria-valuenow="${percentProgress}" aria-valuemin="0"
+                        aria-valuemax="100">${percentProgress}</div></div>`;
+                            }
+                        });
+                        return xhr
+                    },
+                    success: function(response)
+                    {
+                        var responseObj = JSON.parse(response);
+                        uploadForm.reset();
+                        window.location.href = responseObj["redirect_url"];
+                    },
+                    error: function(response)
+                    {
+                        var responseObj = JSON.parse(response);
+                        uploadForm.reset();
+                        window.location.href = responseObj;
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
 
             });
         });
 
-    </script>
-</body>
-</html>
+        </script>
+{% endblock %}

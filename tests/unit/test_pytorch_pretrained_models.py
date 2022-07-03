@@ -62,14 +62,14 @@ class TestClass:
     def test_preprocess_image_that_doesnt_exists(self, pretrained_model):
         pytorch_pretrained_model = pretrained_model
         image = "file_that_doesnt_exists"
-        # when
+
         with pytest.raises(ImageLoadError):
             pytorch_pretrained_model._preprocess_image(image, image_from_numpy=False)
 
     def test_preprocess_fake_image_like_file(self, pretrained_model):
         pytorch_pretrained_model = pretrained_model
         image = "../test_files/car_empty.jpg"
-        # when
+
         with pytest.raises(ImageLoadError):
             pytorch_pretrained_model._preprocess_image(image, image_from_numpy=False)
 

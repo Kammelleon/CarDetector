@@ -1,10 +1,7 @@
-from typing import Union
-
-import cv2
 import numpy
-
 from detector.models.yolo import Yolo
 from detector.models.pretrained_pytorch.model import PretrainedModel
+
 
 class ModelManager:
     """

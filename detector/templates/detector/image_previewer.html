@@ -1,39 +1,41 @@
+{% extends "detector/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
+{% block title %}
+    Car Detector - Preview image
+{% endblock %}
+
+{% block head %}
     <link rel="stylesheet" href="{% static 'detector/css/image_previewer_style.css' %}">
     <link rel="stylesheet" href="{% static 'detector/css/horizontal_progress_bar_style.css' %}">
-    <meta charset="UTF-8">
-    <title>Car Detector - Preview image</title>
-</head>
-<body>
-<div class="navigation_menu" id="navigation_menu">
-      <ul class="navigation_tabs" id="navigation_tabs">
-        <li class="tab_inactive">
-            <a href="{% url 'detector:file-uploader' %}">Upload image</a>
-        </li>
-        <li class="tab_inactive">
-            <a href="{% url 'detector:model-chooser' %}">Choose pretrained model</a>
-        </li>
-        <li class="tab_inactive">
-            Perform detection
-        </li>
-        <li class="tab_active">
-            Check result
-        </li>
-      </ul>
+{% endblock %}
+
+{% block body %}
+    <div class="navigation_menu" id="navigation_menu">
+        <ul class="navigation_tabs" id="navigation_tabs">
+            <li class="tab_inactive">
+                <a href="{% url 'detector:file-uploader' %}">Upload image</a>
+            </li>
+            <li class="tab_inactive">
+                <a href="{% url 'detector:model-chooser' %}">Choose pretrained model</a>
+            </li>
+            <li class="tab_inactive">
+                Perform detection
+            </li>
+            <li class="tab_active">
+                Check result
+            </li>
+        </ul>
     </div>
     <h1>Preview of your image:</h1>
-<div id="image-container">
-    <img src="data:image/jpg;base64, {{ image }}">
-</div>
-<div id="detections-number">
-{% if number_of_detections >= 1 %}
-    <p>Number of detected cars: {{ number_of_detections }}</p>
-{% else %}
-    <p>No cars have been detected</p>
-{% endif %}
-</div>
-</body>
-</html>
+    <div id="image-container">
+        <img src="data:image/jpg;base64, {{ image }}" alt="Preview of image">
+    </div>
+    <div id="detections-number">
+        {% if number_of_detections >= 1 %}
+            <p>Number of detected cars: {{ number_of_detections }}</p>
+        {% else %}
+            <p>No cars have been detected</p>
+        {% endif %}
+    </div>
+{% endblock %}

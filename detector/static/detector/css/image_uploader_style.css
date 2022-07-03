@@ -4,10 +4,6 @@
 }
 body{
   font-family: SanFrancisco;
-  margin:0;
-  background-image: linear-gradient( 109.6deg,  rgba(238,58,136,1) 11.2%, rgba(128,162,245,1) 91.1% );
-  background-repeat: no-repeat;
-  background-attachment: fixed;
 }
 h1{
   text-align: center;
@@ -16,19 +12,6 @@ h1{
   font-size: 2.4rem;
   letter-spacing: 1.2px;
   margin-top: 4.5%;
-}
-.messages{
-  margin-left: 1vw;
-  width:18vw;
-  background: rgba( 255, 255, 255, 0.25 );
-  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
-  backdrop-filter: blur( 7.5px );
-  -webkit-backdrop-filter: blur( 7.5px );
-  border-radius: 10px;
-  border: 1px solid rgba( 255, 255, 255, 0.18 );
-  color:white;
-  font-weight: bold;
-  font-size: 1.2rem;
 }
 form{
   cursor:pointer;
@@ -55,16 +38,8 @@ form p{
   text-align: center;
   line-height: 250px;
   color: #ffffff;
-  font-family: Arial;
   font-weight: bold;
 }
-#progress-bar-container{
-  margin-top:43vh;
-  width:20.7%;
-  margin-left: 39.5%;
-}
-
-
 form input{
   cursor:pointer;
   position: absolute;
@@ -77,7 +52,6 @@ form input{
 
 }
 form button{
-  font-family: SanFrancisco;
   margin: 0;
   color: #fff;
   background: #16a085;
@@ -96,6 +70,27 @@ form button{
   -webkit-backdrop-filter: blur( 8px );
   border-radius: 10px;
   border: 2px solid rgba( 255, 255, 255, 0.2 );
+}
+.messages{
+  margin-left: 1vw;
+  width:18vw;
+  background: rgba( 255, 255, 255, 0.25 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 7.5px );
+  -webkit-backdrop-filter: blur( 7.5px );
+  border-radius: 10px;
+  border: 1px solid rgba( 255, 255, 255, 0.18 );
+  color:white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+#progress-bar-container{
+  margin-top:43vh;
+  width:20.7%;
+  margin-left: 39.5%;
+}
+.not-visible{
+  display: none;
 }
 form button:hover{
   border: 1px solid rgb(82, 191, 255);

@@ -1,7 +1,6 @@
 import base64
 import traceback
 from typing import Union
-
 import numpy
 from torchvision.models import detection
 import numpy as np

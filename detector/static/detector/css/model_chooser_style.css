@@ -1,38 +1,3 @@
-@font-face {
-  font-family: SanFrancisco;
-  src: url(../fonts/SF-UI-Display-Regular.otf);
-}
-body{
-  width:100%;
-  height:100%;
-  font-family: SanFrancisco;
-  margin:0;
-  background-image: linear-gradient( 109.6deg,  rgba(238,58,136,1) 11.2%, rgba(128,162,245,1) 91.1% );
-  background-repeat: no-repeat;
-    background-attachment: fixed;
-}
-.hideme {
-  display: none;
-}
-.showme {
-  display: block;
-}
-.loader{
-  position: absolute;
-  height: 100px;
-  width: 20%;
-  top:40%;
-  left:47.5%;
-}
-
-/*
-  Set the color of the icon
-*/
-svg path,
-svg rect{
-  fill: white;
-}
-
 h1{
   text-align: center;
   color:white;
@@ -41,15 +6,15 @@ h1{
   letter-spacing: 1.2px;
   margin-top: 4.5%;
 }
-#models-form{
-  width:100%;
-  text-align: center;
+svg path,
+svg rect{
+  fill: white;
 }
 select {
   cursor:pointer;
   margin-top:2vh;
   color:white;
-    padding: 0.7% 0.5% 0.7% 0.5%;
+  padding: 0.7% 0.5% 0.7% 0.5%;
   font-weight: bold;
   font-size: 1.3rem;
   transition: all .2s ease;
@@ -62,7 +27,7 @@ select {
   border: 2px solid rgba( 255, 255, 255, 0.2 );
 }
 select:hover{
-    border: 2px solid rgb(82, 191, 255);
+  border: 2px solid rgb(82, 191, 255);
   -webkit-box-shadow: 0px 0px 11px 0px rgba(113, 192, 243, 1);
   -moz-box-shadow: 0px 0px 11px 0px rgba(113, 192, 243, 1);
   box-shadow: 0px 0px 11px 0px rgba(113, 192, 243, 1);
@@ -75,7 +40,7 @@ select:focus{
   outline: none;
 }
 form button{
-   font-family: SanFrancisco;
+  font-family: SanFrancisco;
   margin: 0;
   color: #fff;
   background: #16a085;
@@ -101,4 +66,25 @@ form button:hover{
   -webkit-box-shadow: 0px 0px 11px 0px rgba(113, 192, 243, 1);
   -moz-box-shadow: 0px 0px 11px 0px rgba(113, 192, 243, 1);
   box-shadow: 0px 0px 11px 0px rgba(113, 192, 243, 1);
+}
+.hideme {
+  display: none;
+}
+.showme {
+  display: block;
+}
+.loader{
+  position: absolute;
+  height: 100px;
+  width: 20%;
+  top:40%;
+  left:47.5%;
+}
+
+/*
+  Set the color of the loading icon
+*/
+#models-form{
+  width:100%;
+  text-align: center;
 }
