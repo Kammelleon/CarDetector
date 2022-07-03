@@ -17,19 +17,20 @@ class PretrainedModel:
     Attributes:
         coco_dataset_location (str): path (relative or absolute) to COCO dataset file in pickle format
     """
+    AVAILABLE_MODELS = {
+        "frcnn-resnet": detection.fasterrcnn_resnet50_fpn,
+        "high-res-frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_fpn,
+        "low-res-frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_320_fpn,
+        "retinanet": detection.retinanet_resnet50_fpn,
+        "fcos-resnet": detection.fcos_resnet50_fpn,
+        "ssd300": detection.ssd300_vgg16,
+        "ssdlite-mobilenet": detection.ssdlite320_mobilenet_v3_large
+    }
+
     def __init__(self, coco_dataset_location: str = "./detector/models/pretrained_pytorch/coco_dataset.pickle"):
         self.DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.CLASSES = None
         self.COLORS = None
-        self.AVAILABLE_MODELS = {
-            "frcnn-resnet": detection.fasterrcnn_resnet50_fpn,
-            "high-res-frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_fpn,
-            "low-res-frcnn-mobilenet": detection.fasterrcnn_mobilenet_v3_large_320_fpn,
-            "retinanet": detection.retinanet_resnet50_fpn,
-            "fcos-resnet": detection.fcos_resnet50_fpn,
-            "ssd300": detection.ssd300_vgg16,
-            "ssdlite-mobilenet": detection.ssdlite320_mobilenet_v3_large
-        }
         self.minimum_confidence = 0.6
         self.coco_dataset_location = coco_dataset_location
         self.model = None
@@ -124,7 +125,8 @@ class PretrainedModel:
         try:
             self.CLASSES = pickle.loads(open(coco_dataset_location, "rb").read())
             if len(self.CLASSES) != 91:
-                raise DatasetError(f"Dataset must contain exactly 91 classes. Your dataset contains: {len(self.CLASSES)}")
+                raise DatasetError(
+                    f"Dataset must contain exactly 91 classes. Your dataset contains: {len(self.CLASSES)}")
         except FileNotFoundError:
             raise DatasetNotFoundError(f"Dataset has not been found in given location: {self.coco_dataset_location}")
         except pickle.UnpicklingError:
@@ -154,7 +156,8 @@ class PretrainedModel:
         except cv2.error:
             raise ImageConversionError("Ensure that your image is correct and is of type numpy.ndarray")
 
-    def _preprocess_image(self, numpy_image: Union[numpy.ndarray, str], image_from_numpy: bool = True) -> tuple[torch.Tensor, numpy.ndarray]:
+    def _preprocess_image(self, numpy_image: Union[numpy.ndarray, str], image_from_numpy: bool = True) -> tuple[
+        torch.Tensor, numpy.ndarray]:
         """
         Converts numpy ndarray into image-object and prepares image for detection.
 
@@ -195,14 +198,18 @@ class PretrainedModel:
 class PretrainedModelNotFoundError(Exception):
     pass
 
+
 class DatasetNotFoundError(Exception):
     pass
+
 
 class DatasetError(Exception):
     pass
 
+
 class ImageLoadError(Exception):
     pass
+
 
 class ImageConversionError(Exception):
     pass

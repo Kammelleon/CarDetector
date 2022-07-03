@@ -11,6 +11,7 @@ class Yolo:
     """
     Base class for all YOLOv5 models.
     """
+    AVAILABLE_MODELS = ["yolov5n","yolov5s","yolov5m","yolov5l","yolov5x"]
     def __init__(self):
         self.minimum_confidence = 0.6
         self.model = None
