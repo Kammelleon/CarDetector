@@ -9,7 +9,6 @@ class UploaderTestCase(TestCase):
             response = c.post('/', {'image': image})
         self.assertInHTML('{"redirect_url": "/"}', response.content.decode())
 
-
     def test_upload_correct_image_file(self):
         c = Client()
         with open('./tests/test_files/car.jpg', 'rb') as image:

@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="{% static 'detector/css/image_previewer_style.css' %}">
     <link rel="stylesheet" href="{% static 'detector/css/horizontal_progress_bar_style.css' %}">
     <meta charset="UTF-8">
-    <title>Image preview</title>
+    <title>Car Detector - Preview image</title>
 </head>
 <body>
 <div class="navigation_menu" id="navigation_menu">
@@ -32,7 +32,7 @@
 {% if number_of_detections >= 1 %}
     <p>Number of detected cars: {{ number_of_detections }}</p>
 {% else %}
-    <p>No cars detected</p>
+    <p>No cars have been detected</p>
 {% endif %}
 </div>
 </body>
