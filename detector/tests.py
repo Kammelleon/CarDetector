@@ -41,3 +41,8 @@ class ModelChooserTestCase(TestCase):
         response = c.post('/model/', {'model': ['ssd300']})
         self.assertRedirects(response, '/preview/')
 
+    def test_redirect_to_file_uploader_if_no_image_has_been_uploaded(self):
+        c = Client()
+        response = c.get('/model/')
+        self.assertRedirects(response, '/')
+

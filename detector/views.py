@@ -36,12 +36,16 @@ class ModelChooser(View):
     selected_model = None
 
     def get(self, request):
+        if ImageUploader.uploaded_image is not None:
 
-        context = {
-            "detection_model_form": DetectionModelForm()
-        }
+            context = {
+                "detection_model_form": DetectionModelForm()
+            }
 
-        return render(request, "detector/model_chooser.html", context=context)
+            return render(request, "detector/model_chooser.html", context=context)
+        else:
+            messages.error(request,"You need to upload an image first")
+            return redirect("detector:image-uploader")
 
     def post(self, request):
         detection_model_form = DetectionModelForm(request.POST)
@@ -54,14 +58,14 @@ class ModelChooser(View):
                 rendered_image, number_of_detections = model_manager.perform_detection_on(ImageUploader.uploaded_image)
             except Exception:
                 messages.error(request, "An error occured during detection. Check your image and try again.")
-                return redirect("detector:file-uploader")
+                return redirect("detector:image-uploader")
 
             ImagePreviewer.rendered_image = rendered_image
             ImagePreviewer.number_of_detections = number_of_detections
             return redirect("detector:image-previewer")
         else:
             messages.error(request, "Selected pretrained model doesn't exists. Try again.")
-            return redirect("detector:file-uploader")
+            return redirect("detector:image-uploader")
 
 
 class ImagePreviewer(View):
@@ -78,5 +82,5 @@ class ImagePreviewer(View):
             return render(request, "detector/image_previewer.html", context=context)
 
         else:
-            messages.error(request, "No image has been uploaded")
-            return redirect("detector:file-uploader")
+            messages.error(request, "You need to upload an image first")
+            return redirect("detector:image-uploader")
