@@ -1,6 +1,6 @@
 # Car Detector
 
-Description soon...
+Detect a car on image using one of the pretrained models
 
 # Preview images
 
